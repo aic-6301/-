@@ -1,0 +1,43 @@
+
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: black;
+    color: red;
+    font-family: "Arial", sans-serif;
+    font-size: 10vw;
+    text-align: center;
+}
+
+.text {
+    font-size: 20vw;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: rgb(255, 255, 255);
+    background-size: 600%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    cursor: pointer;
+    transition: transform 0.00005s ease; 
+}
+
+@keyframes shake {
+    0% {
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(1.1); /* 少し拡大 */
+    }
+    50% {
+        transform: scale(0.9); /* 少し縮小 */
+    }
+    75% {
+        transform: scale(1.1); /* 再び拡大 */
+    }
+    100% {
+        transform: scale(1); /* 元に戻す */
+    }
+}

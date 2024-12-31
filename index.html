@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="jp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://unpkg.com/wavesurfer.js"></script>
+    <title>絶命</title>
+</head>
+<body>
+    <div class="text" onclick="playAudio()">絶命</div>
+
+    <audio id="audio" src="sound/絶命.mp3"></audio>
+
+    <script>
+        let audioContext, analyser, bufferLength, dataArray;
+        const text = document.querySelector('.text');
+
+        function playAudio() {
+            const audio = document.getElementById('audio');
+
+            text.style.pointerEvents = 'none';
+
+            audio.play();
+
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+
+            const source = audioContext.createMediaElementSource(audio);
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+
+            function updateShake() {
+                analyser.getByteFrequencyData(dataArray);
+
+                let sum = 0;
+                for (let i = 0; i < bufferLength; i++) {
+                    sum += dataArray[i];
+                }
+                let average = sum / bufferLength;
+
+                const shakeAmount = (average / 255) * 1.5;
+
+                const shakeX = (Math.random() - 0.5) * shakeAmount * 10;
+                const shakeY = (Math.random() - 0.5) * shakeAmount * 10;
+                const scaleAmount = 1 + shakeAmount * 2;
+                const blurAmount = shakeAmount * 1.5;
+
+                text.style.transform = `scale(${scaleAmount}) translate(${shakeX}px, ${shakeY}px)`;
+                text.style.filter = `blur(${blurAmount}px)`;
+
+                requestAnimationFrame(updateShake);
+            }
+
+            updateShake();
+
+            audio.onended = function() {
+                text.style.pointerEvents = 'auto';
+                text.style.filter = 'none';
+            };
+        }
+    </script>
+</body>
+</html>
