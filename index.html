@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="jp">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,13 +8,14 @@
     <script src="https://unpkg.com/wavesurfer.js"></script>
     <title>絶命</title>
 </head>
+
 <body>
     <div class="text" onclick="playAudio()">絶命</div>
 
     <audio id="audio" src="sound/絶命.mp3"></audio>
 
     <script>
-        let audioContext, analyser, bufferLength, dataArray;
+        let audioContext, audioSource, analyser, bufferLength, dataArray;
         const text = document.querySelector('.text');
 
         function playAudio() {
@@ -24,14 +26,16 @@
             audio.play();
 
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioContext.createAnalyser();
-            analyser.fftSize = 256;
-            bufferLength = analyser.frequencyBinCount;
-            dataArray = new Uint8Array(bufferLength);
+            if (!audioSource) {
+                audioSource = audioContext.createMediaElementSource(audio);
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+                audioSource.connect(analyser);
+                analyser.connect(audioContext.destination);
+            }
 
-            const source = audioContext.createMediaElementSource(audio);
-            source.connect(analyser);
-            analyser.connect(audioContext.destination);
 
             function updateShake() {
                 analyser.getByteFrequencyData(dataArray);
@@ -57,11 +61,12 @@
 
             updateShake();
 
-            audio.onended = function() {
+            audio.onended = function () {
                 text.style.pointerEvents = 'auto';
                 text.style.filter = 'none';
             };
         }
     </script>
 </body>
+
 </html>
